@@ -1,4 +1,3 @@
-# main.py
 import streamlit as st
 import pandas as pd
 import psycopg2
@@ -59,11 +58,14 @@ if df.empty:
 else:
     # Define a ordem das respostas para os gráficos de frequência.
     ORDER_MAP = ["Nunca", "Raramente", "Ocasionalmente", "Frequentemente", "Muito frequentemente"]
-    
-    # Define as cores para os gráficos.
-    PRIMARY_COLOR = "#1c4e80"
-    SECONDARY_COLORS = px.colors.sequential.Blues_r
-    
+
+    # Define as novas cores para os gráficos para maior contraste
+    # Exemplo de paleta:
+    # PRIMARY_COLOR para gráficos de barra única
+    PRIMARY_COLOR = "#2ca02c" # Um verde vibrante
+    # SECONDARY_COLORS para gráficos com múltiplas categorias (pizza, barras com muitas categorias)
+    SECONDARY_COLORS = px.colors.qualitative.D3 # Uma paleta qualitativa com cores distintas
+
     # --- Seção: Perfil dos Participantes ---
     st.header("👤 Perfil dos Participantes")
     col1, col2 = st.columns(2) # Cria duas colunas para organizar os gráficos.
@@ -75,7 +77,7 @@ else:
         uni_counts = df['universidade'].value_counts().reset_index()
         uni_counts.columns = ['Universidade', 'Quantidade']
         # Cria um gráfico de barras.
-        fig_uni = px.bar(uni_counts, x='Universidade', y='Quantidade', 
+        fig_uni = px.bar(uni_counts, x='Universidade', y='Quantidade',
                          text='Quantidade', title="Respostas por Universidade",
                          color_discrete_sequence=[PRIMARY_COLOR])
         fig_uni.update_traces(textposition='outside')
@@ -88,9 +90,9 @@ else:
         curso_counts = df['curso'].value_counts().reset_index()
         curso_counts.columns = ['Curso', 'Quantidade']
         # Cria um gráfico de pizza.
-        fig_curso = px.pie(curso_counts, names='Curso', values='Quantidade', 
+        fig_curso = px.pie(curso_counts, names='Curso', values='Quantidade',
                            title="Respostas por Curso",
-                           color_discrete_sequence=px.colors.sequential.Blues)
+                           color_discrete_sequence=SECONDARY_COLORS) # Usando a nova paleta secundária
         st.plotly_chart(fig_curso, use_container_width=True)
 
     # --- Seção: Acesso à Leitura e Equipamentos ---
@@ -170,10 +172,10 @@ else:
     fig_freq_longos = px.bar(freq_longos_counts, x=freq_longos_counts.index, y=freq_longos_counts.values,
                               labels={'x': 'Frequência', 'y': 'Quantidade'},
                               title="Frequência de leitura de textos longos",
-                              text=freq_longos_counts.values, color_discrete_sequence=SECONDARY_COLORS)
+                              color_discrete_sequence=SECONDARY_COLORS) # Usando a nova paleta secundária
     fig_freq_longos.update_traces(textposition='outside')
     st.plotly_chart(fig_freq_longos, use_container_width=True)
-    
+
     # --- Seção: Respostas Descritivas ---
     st.header("📝 Respostas Descritivas")
     # Expansor para mostrar as justificativas sobre a leitura de textos longos.
