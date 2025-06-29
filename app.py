@@ -187,3 +187,4 @@ else:
     st.markdown(f"**Média geral de respostas por comunidade:** `{media_geral:.2f}`")
 
     st.dataframe(respostas_por_comunidade)
+# 
