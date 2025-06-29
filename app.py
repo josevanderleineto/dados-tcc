@@ -45,13 +45,13 @@ else:
     ORDER_MAP = ["Nunca", "Raramente", "Ocasionalmente", "Frequentemente", "Muito frequentemente"]
 
     # Define as paletas de cores.
-    GREEN_COLOR = "#2ca02c" # Cor verde para o primeiro e último gráfico de barra única
-    QUALITATIVE_COLORS = px.colors.qualitative.D3 # Paleta para gráfico de pizza e multi-categorias
+    GREEN_COLOR = "#2ca02c"
+    QUALITATIVE_COLORS = px.colors.qualitative.D3
     BAR_COLOR_1 = px.colors.sequential.Purples[4]
     BAR_COLOR_2 = px.colors.sequential.Oranges[4]
     BAR_COLOR_3 = px.colors.sequential.Reds[4]
     BAR_COLOR_4 = px.colors.sequential.Blues[4]
-    BAR_COLOR_5 = px.colors.sequential.Blues[6] # Este já é o azul para o "Frequência geral de acesso"
+    BAR_COLOR_5 = px.colors.sequential.Blues[6]
 
     # --- Seção: Perfil dos Participantes ---
     st.header("👤 Perfil dos Participantes")
@@ -63,7 +63,7 @@ else:
         uni_counts.columns = ['Universidade', 'Quantidade']
         fig_uni = px.bar(uni_counts, x='Universidade', y='Quantidade',
                          text='Quantidade', title="Respostas por Universidade",
-                         color_discrete_sequence=[GREEN_COLOR]) # Verde
+                         color_discrete_sequence=[GREEN_COLOR])
         fig_uni.update_traces(textposition='outside')
         st.plotly_chart(fig_uni, use_container_width=True)
 
@@ -81,8 +81,12 @@ else:
         fig_curso.update_traces(textposition='outside',
                                 textinfo='percent+label',
                                 selector=dict(type='pie'))
-        
-        fig_curso.update_layout(margin=dict(l=50, r=50, b=50, t=50))
+
+        # ✅ Correção aplicada aqui
+        fig_curso.update_layout(
+            margin=dict(l=50, r=50, b=150, t=50),
+            showlegend=False
+        )
         
         st.plotly_chart(fig_curso, use_container_width=True)
 
@@ -97,7 +101,7 @@ else:
         df_acesso = pd.DataFrame(acesso_counts.items(), columns=['Forma de Acesso', 'Quantidade']).sort_values('Quantidade', ascending=False)
         fig_acesso = px.bar(df_acesso, x='Forma de Acesso', y='Quantidade',
                             title="Como acessava o livro e a leitura na comunidade",
-                            text='Quantidade', color_discrete_sequence=[BAR_COLOR_1]) # Roxo
+                            text='Quantidade', color_discrete_sequence=[BAR_COLOR_1])
         fig_acesso.update_traces(textposition='outside')
         st.plotly_chart(fig_acesso, use_container_width=True)
 
@@ -108,7 +112,7 @@ else:
         df_equip = pd.DataFrame(equip_counts.items(), columns=['Equipamento', 'Quantidade']).sort_values('Quantidade', ascending=False)
         fig_equip = px.bar(df_equip, x='Equipamento', y='Quantidade',
                            title="Equipamentos utilizados para acessar leitura",
-                           text='Quantidade', color_discrete_sequence=[BAR_COLOR_2]) # Laranja
+                           text='Quantidade', color_discrete_sequence=[BAR_COLOR_2])
         fig_equip.update_traces(textposition='outside')
         st.plotly_chart(fig_equip, use_container_width=True)
 
@@ -122,7 +126,7 @@ else:
         internet_counts.columns = ['Avaliação', 'Quantidade']
         fig_internet = px.funnel(internet_counts, x='Quantidade', y='Avaliação',
                                  title="Como é o acesso à internet na comunidade",
-                                 color_discrete_sequence=[BAR_COLOR_3]) # Vermelho
+                                 color_discrete_sequence=[BAR_COLOR_3])
         st.plotly_chart(fig_internet, use_container_width=True)
 
     with col6:
@@ -131,7 +135,7 @@ else:
         tec_uni_counts.columns = ['Avaliação', 'Quantidade']
         fig_tec_uni = px.bar(tec_uni_counts, y='Avaliação', x='Quantidade', orientation='h',
                              title="Avaliação dos recursos tecnológicos na universidade",
-                             text='Quantidade', color_discrete_sequence=[BAR_COLOR_4]) # Azul
+                             text='Quantidade', color_discrete_sequence=[BAR_COLOR_4])
         fig_tec_uni.update_traces(textposition='outside')
         st.plotly_chart(fig_tec_uni, use_container_width=True)
 
@@ -143,7 +147,7 @@ else:
     fig_freq_acesso = px.bar(freq_acesso_counts, x=freq_acesso_counts.index, y=freq_acesso_counts.values,
                              labels={'x': 'Frequência', 'y': 'Quantidade'},
                              title="Frequência geral de acesso ao livro e leitura",
-                             text=freq_acesso_counts.values, color_discrete_sequence=[BAR_COLOR_5]) # Azul
+                             text=freq_acesso_counts.values, color_discrete_sequence=[BAR_COLOR_5])
     fig_freq_acesso.update_traces(textposition='outside')
     st.plotly_chart(fig_freq_acesso, use_container_width=True)
 
@@ -152,7 +156,7 @@ else:
     fig_freq_longos = px.bar(freq_longos_counts, x=freq_longos_counts.index, y=freq_longos_counts.values,
                               labels={'x': 'Frequência', 'y': 'Quantidade'},
                               title="Frequência de leitura de textos longos",
-                              color_discrete_sequence=[GREEN_COLOR]) # AGORA VERDE
+                              color_discrete_sequence=[GREEN_COLOR])
     fig_freq_longos.update_traces(textposition='outside')
     st.plotly_chart(fig_freq_longos, use_container_width=True)
 
@@ -172,3 +176,14 @@ else:
     st.header("📄 Tabela de Dados Brutos")
     with st.expander("Clique para ver a tabela de dados completa"):
         st.dataframe(df)
+    # --- Seção: Média de Respostas por Comunidade ---
+    st.header("🏘️ Média de Respostas por Comunidade")
+
+    respostas_por_comunidade = df['comunidade_natal'].value_counts().reset_index()
+    respostas_por_comunidade.columns = ['Comunidade', 'Total de Respostas']
+    
+    media_geral = respostas_por_comunidade['Total de Respostas'].mean()
+
+    st.markdown(f"**Média geral de respostas por comunidade:** `{media_geral:.2f}`")
+
+    st.dataframe(respostas_por_comunidade)
